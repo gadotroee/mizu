@@ -195,6 +195,12 @@ func (h *httpReader) handleHTTP2Stream() error {
 
 func (h *httpReader) handleHTTP1ClientStream(b *bufio.Reader) error {
 	req, err := http.ReadRequest(b)
+
+	method := req.Method
+	if !ValidateMethod(method) {
+		Error("invalid-method-from-http", "mizu/tap/http_reader, captured message with invalid method: %s", method)
+	}
+
 	h.messageCount++
 	if err != nil {
 		return err
@@ -281,6 +287,16 @@ func (h *httpReader) handleHTTP1ServerStream(b *bufio.Reader) error {
 
 	ident := fmt.Sprintf("%s->%s %s->%s %d", h.tcpID.dstIP, h.tcpID.srcIP, h.tcpID.dstPort, h.tcpID.srcPort, h.messageCount)
 	reqResPair := reqResMatcher.registerResponse(ident, res, h.captureTime)
+
+	if request, ok := reqResPair.Request.orig.(*http.Request); !ok {
+		Error("convert-back-to-request", "mizu/tap/http_reader, error converting to request")
+	} else {
+		method := request.Method
+		if !ValidateMethod(method) {
+			Error("invalid-method-from-matcher", "mizu/tap/http_reader, got message from matcher with invalid method: %s", method)
+		}
+	}
+
 	if reqResPair != nil {
 		statsTracker.incMatchedPairs()
 
