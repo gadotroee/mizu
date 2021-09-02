@@ -196,15 +196,16 @@ func (h *httpReader) handleHTTP2Stream() error {
 func (h *httpReader) handleHTTP1ClientStream(b *bufio.Reader) error {
 	req, err := http.ReadRequest(b)
 
+	h.messageCount++
+	if err != nil {
+		return err
+	}
+
 	method := req.Method
 	if !ValidateMethod(method) {
 		Error("invalid-method-from-http", "mizu/tap/http_reader, captured message with invalid method: %s", method)
 	}
 
-	h.messageCount++
-	if err != nil {
-		return err
-	}
 	body, err := ioutil.ReadAll(req.Body)
 	req.Body = io.NopCloser(bytes.NewBuffer(body)) // rewind
 	s := len(body)
