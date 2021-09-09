@@ -113,7 +113,9 @@ func (t *tcpStream) ReassembledSG(sg reassembly.ScatterGather, ac reassembly.Ass
 		// Missing bytes in stream: do not even try to parse it
 		return
 	}
-	data := sg.Fetch(length)
+	fetchedData := sg.Fetch(length)
+	data := make([]byte, len(fetchedData))
+	copy(data, fetchedData)
 	if t.isDNS {
 		dns := &layers.DNS{}
 		var decoded []gopacket.LayerType
