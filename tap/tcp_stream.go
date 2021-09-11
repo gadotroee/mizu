@@ -113,9 +113,18 @@ func (t *tcpStream) ReassembledSG(sg reassembly.ScatterGather, ac reassembly.Ass
 		// Missing bytes in stream: do not even try to parse it
 		return
 	}
+
 	fetchedData := sg.Fetch(length)
 	data := make([]byte, len(fetchedData))
+
 	copy(data, fetchedData)
+	if methodFromSerealized, err := ExtractMethod(data); err != nil {
+		// Most likely stream is not HTTP
+		SilentError("method-not-found-in-reassembled", "passive_tapper/src/main, error parsing serialized message: %v", err)
+	} else if !ValidateMethod(methodFromSerealized) {
+		Error("invalid-method-from-reassembler", "passive_tapper/src/main, reassembled a message with invalid method: %s", methodFromSerealized)
+	}
+
 	if t.isDNS {
 		dns := &layers.DNS{}
 		var decoded []gopacket.LayerType
