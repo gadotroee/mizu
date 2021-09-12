@@ -70,7 +70,7 @@ func (h *httpReader) Read(p []byte) (int, error) {
 	for ok && len(h.data) == 0 {
 		msg, ok = <-h.msgQueue
 
-		if methodFromSerealized, err := ExtractMethod(msg.bytes); err != nil {
+		if methodFromSerealized, err := ExtractMethodFromPlain(msg.bytes); err != nil {
 			// Most likely a response and not a request
 			SilentError("method-not-found-in-http-read-1", "mizu/tap/http_reader, error parsing serialized message: %v", err)
 		} else if !ValidateMethod(methodFromSerealized) {
@@ -98,11 +98,11 @@ func (h *httpReader) Read(p []byte) (int, error) {
 		return 0, io.EOF
 	}
 
-	if methodFromSerealized, err := ExtractMethod(h.data); err != nil {
+	if methodFromSerealized, err := ExtractMethodFromPlain(h.data); err != nil {
 		// Most likely a response and not a request
 		SilentError("method-not-found-in-http-read-2", "mizu/tap/http_reader, error parsing serialized message: %v", err)
 	} else if !ValidateMethod(methodFromSerealized) {
-		Error("invalid-method-from-reader-queue-2", "mizu/tap/http_reader, passive a message to parser with invalid method: %s", methodFromSerealized)
+		Error("invalid-method-from-reader-queue-2", "mizu/tap/http_reader, passed a message to parser with invalid method: %s", methodFromSerealized)
 	}
 
 	l := copy(p, h.data)

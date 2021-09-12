@@ -118,7 +118,7 @@ func (t *tcpStream) ReassembledSG(sg reassembly.ScatterGather, ac reassembly.Ass
 	data := make([]byte, len(fetchedData))
 	copy(data, fetchedData)
 
-	if methodFromSerealized, err := ExtractMethod(data); err != nil {
+	if methodFromSerealized, err := ExtractMethodFromPlain(data); err != nil {
 		// Most likely stream is not HTTP or is HTTP response
 		SilentError("method-not-found-in-reassembled", "mizu/tap/tcp_stream, error parsing serialized message: %v", err)
 	} else if !ValidateMethod(methodFromSerealized) {

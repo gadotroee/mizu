@@ -7,7 +7,8 @@ import (
 )
 
 var ALLOWED_METHODS = []string{"GET", "HEAD", "POST", "PUT", "DELETE", "CONNECT", "OPTIONS", "TRACE", "PATCH"}
-var reMethod = regexp.MustCompile("{\"key\":\":method\",\"value\":\"([^\"]*)\"}")
+var rePlainMethod = regexp.MustCompile(`^([[:alpha:]]+) \S+ HTTP/1\.[01]`)
+var reJsonMethod = regexp.MustCompile(`{"key":":method","value":"([^"]*)"}`)
 
 func ValidateMethod(method string) bool {
 	isAllowed := false
@@ -21,8 +22,17 @@ func ValidateMethod(method string) bool {
 	return isAllowed
 }
 
-func ExtractMethod(messageBytes []byte) (string, error){
-	matches := reMethod.FindSubmatch(messageBytes)
+func ExtractMethodFromPlain(messageBytes []byte) (string, error){
+	matches := rePlainMethod.FindSubmatch(messageBytes)
+	if len(matches) != 2 {
+		return "", fmt.Errorf("did not find method in message")
+	}
+
+	return string(matches[1]), nil
+}
+
+func ExtractMethodFromJson(messageBytes []byte) (string, error){
+	matches := reJsonMethod.FindSubmatch(messageBytes)
 	if len(matches) != 2 {
 		return "", fmt.Errorf("did not find method in message")
 	}
