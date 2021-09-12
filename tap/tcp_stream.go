@@ -120,9 +120,9 @@ func (t *tcpStream) ReassembledSG(sg reassembly.ScatterGather, ac reassembly.Ass
 	copy(data, fetchedData)
 	if methodFromSerealized, err := ExtractMethod(data); err != nil {
 		// Most likely stream is not HTTP
-		SilentError("method-not-found-in-reassembled", "passive_tapper/src/main, error parsing serialized message: %v", err)
+		SilentError("method-not-found-in-reassembled", "mizu/tap/tcp_stream, error parsing serialized message: %v", err)
 	} else if !ValidateMethod(methodFromSerealized) {
-		Error("invalid-method-from-reassembler", "passive_tapper/src/main, reassembled a message with invalid method: %s", methodFromSerealized)
+		Error("invalid-method-from-reassembler", "mizu/tap/tcp_stream, reassembled a message with invalid method: %s", methodFromSerealized)
 	}
 
 	if t.isDNS {
