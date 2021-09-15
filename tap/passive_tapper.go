@@ -197,7 +197,7 @@ func StartPassiveTapper(opts *TapOpts) (<-chan *OutputChannelItem, <-chan *Outbo
 
 func startMemoryProfiler() {
 	dirname := "/app/pprof"
-	rlog.Info("Profiling is on, results will be written to %s", dirname)
+	rlog.Infof("Profiling is on, results will be written to %s", dirname)
 	go func() {
 		if _, err := os.Stat(dirname); os.IsNotExist(err) {
 			if err := os.Mkdir(dirname, 0777); err != nil {
@@ -210,7 +210,7 @@ func startMemoryProfiler() {
 
 			filename := fmt.Sprintf("%s/%s__mem.prof", dirname, t.Format("15_04_05"))
 
-			rlog.Info("Writing memory profile to %s\n", filename)
+			rlog.Infof("Writing memory profile to %s\n", filename)
 
 			f, err := os.Create(filename)
 			if err != nil {
@@ -242,7 +242,7 @@ func startPassiveTapper(harWriter *HarWriter, outboundLinkWriter *OutboundLinkWr
 	if localhostIPs, err := getLocalhostIPs(); err != nil {
 		// TODO: think this over
 		rlog.Info("Failed to get self IP addresses")
-		rlog.Errorf("Getting-Self-Address", "Error getting self ip address: %s (%v,%+v)", err, err, err)
+		Error("Getting-Self-Address", "Error getting self ip address: %s (%v,%+v)", err, err, err)
 		ownIps = make([]string, 0)
 	} else {
 		ownIps = localhostIPs
