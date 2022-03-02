@@ -1,5 +1,7 @@
 ![Mizu: The API Traffic Viewer for Kubernetes](assets/mizu-logo.svg)
 
+
+
 <p align="center">
     <a href="https://github.com/up9inc/mizu/blob/main/LICENSE">
         <img alt="GitHub License" src="https://img.shields.io/github/license/up9inc/mizu?logo=GitHub&style=flat-square">
